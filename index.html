@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Historias de Cumpleaños</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.6.0/dist/tabler-icons.min.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f0f1f;--surface:#1a1a2e;--border:rgba(255,255,255,0.1);
+  --text:#fff;--muted:rgba(255,255,255,0.6);--hint:rgba(255,255,255,0.3);
+  --accent:#a855f7;--accent2:#ec4899;--accent3:#06b6d4;--accent4:#f97316;
+  --r-lg:24px;--r-md:14px;--r-sm:8px;
+}
+body{
+  font-family:'Inter',system-ui,sans-serif;
+  background:linear-gradient(135deg,#0f0f1f 0%,#1a0033 50%,#0f0f1f 100%);
+  color:var(--text);min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  padding:0.5rem;
+}
+
+/* ── STORY CONTAINER ── */
+.story-wrapper{
+  width:100%;max-width:400px;
+  display:flex;flex-direction:column;
+  align-items:center;gap:10px;
+}
+.story-phone{
+  width:100%;
+  border-radius:20px;
+  overflow:hidden;
+  position:relative;
+  aspect-ratio:9/16;
+  max-height:680px;
+  background:#111;
+  box-shadow:0 24px 64px rgba(0,0,0,0.6);
+  border:1px solid rgba(255,255,255,0.08);
+}
+
+/* ── PROGRESS BARS ── */
+.progress-bars{
+  position:absolute;top:10px;left:10px;right:10px;
+  display:flex;gap:4px;z-index:30;
+}
+.prog-seg{
+  flex:1;height:3px;border-radius:2px;
+  background:rgba(255,255,255,0.35);overflow:hidden;
+  cursor:pointer;
+}
+.prog-fill{
+  height:100%;width:0%;
+  background:#fff;
+  border-radius:2px;
+  transition:none;
+}
+.prog-seg.done .prog-fill{width:100%}
+
+/* ── HEADER ── */
+.story-header{
+  position:absolute;top:22px;left:10px;right:10px;
+  display:flex;align-items:center;gap:10px;
+  z-index:30;padding-top:4px;
+}
+.avatar-ring{
+  width:36px;height:36px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  padding:2px;
+}
+.avatar-inner{
+  width:100%;height:100%;border-radius:50%;
+  background:#222;display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:600;
+}
+.story-meta{flex:1;min-width:0}
+.story-username{font-size:13px;font-weight:600;color:#fff}
+.story-time{font-size:11px;color:rgba(255,255,255,0.7)}
+.story-close{
+  background:none;border:none;color:rgba(255,255,255,0.8);
+  font-size:22px;cursor:pointer;padding:4px;line-height:1;
+}
+
+/* ── SLIDES ── */
+.slide{
+  position:absolute;inset:0;
+  display:none;flex-direction:column;
+  align-items:center;justify-content:flex-end;
+  animation:fadeIn 0.25s ease;
+}
+.slide.active{display:flex}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.slide-bg{position:absolute;inset:0;z-index:0}
+.slide-content{
+  position:relative;z-index:2;
+  width:100%;padding:1.5rem 1rem 5.5rem;
+  display:flex;flex-direction:column;align-items:center;
+}
+
+/* cover */
+.cover-bg{background:linear-gradient(135deg,#6d28d9,#ec4899,#f97316,#06b6d4)}
+.cover-stars{font-size:22px;letter-spacing:4px;opacity:.8;margin-bottom:1rem}
+.cover-eyebrow{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:.4rem}
+.cover-name{font-size:34px;font-weight:700;line-height:1.1;margin-bottom:.5rem;text-align:center}
+.cover-sub{font-size:13px;color:var(--muted);text-align:center;margin-bottom:1.5rem}
+
+/* photo */
+.photo-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.photo-gradient{position:absolute;bottom:0;left:0;right:0;height:65%;background:linear-gradient(to top,rgba(0,0,0,.9),transparent);z-index:1}
+.photo-caption{color:#fff;font-size:14px;line-height:1.5;text-align:center;margin-bottom:.5rem}
+.photo-label{color:var(--muted);font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:.4rem}
+.upload-placeholder{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:8px;
+  color:var(--hint);font-size:12px;cursor:pointer;background:#1a1a1a;
+}
+.upload-placeholder i{font-size:48px;opacity:.4}
+
+/* songs */
+.songs-bg{background:linear-gradient(135deg,#7c3aed,#bd167d,#ec4899)}
+.song-list{width:100%;display:flex;flex-direction:column;gap:8px;margin-bottom:1rem}
+.song-item{
+  display:flex;align-items:center;gap:10px;
+  background:rgba(255,255,255,.08);border-radius:var(--r-md);
+  padding:10px 12px;border:1px solid rgba(255,255,255,.12);
+}
+.song-num{color:var(--hint);font-size:11px;min-width:14px}
+.song-art{width:38px;height:38px;border-radius:8px;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;overflow:hidden}
+.song-art img{width:100%;height:100%;object-fit:cover}
+.song-info{flex:1;min-width:0}
+.song-name{font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.song-artist{font-size:10px;color:var(--muted);margin-top:1px}
+
+/* message */
+.msg-bg{background:linear-gradient(135deg,#0d2137,#1e3a8a,#3b82f6,#06b6d4)}
+.msg-hearts{font-size:20px;letter-spacing:6px;opacity:.8;margin-bottom:1rem}
+.msg-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:1rem}
+.msg-text{font-size:14px;line-height:1.75;color:#fff;font-style:italic;text-align:center;max-width:280px}
+.msg-signature{font-size:12px;color:var(--muted);margin-top:1rem}
+
+/* ── MUSIC WIDGET ── */
+.music-widget{
+  position:absolute;bottom:72px;left:10px;right:10px;
+  display:flex;align-items:center;gap:8px;
+  background:rgba(0,0,0,.55);
+  backdrop-filter:blur(8px);
+  border-radius:12px;padding:8px 12px;
+  z-index:20;
+  border:0.5px solid rgba(255,255,255,.15);
+  transition:opacity .3s;
+}
+.music-widget.hidden{display:none}
+.music-album{
+  width:36px;height:36px;border-radius:8px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;overflow:hidden;
+}
+.music-album img{width:100%;height:100%;object-fit:cover}
+.music-info{flex:1;min-width:0}
+.music-name{font-size:12px;font-weight:500;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.music-artist{font-size:10px;color:rgba(255,255,255,.6);margin-top:1px}
+.music-icon{
+  width:28px;height:28px;border-radius:50%;
+  background:var(--accent);display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;font-size:13px;color:#fff;
+  animation:spin-disc 4s linear infinite;
+}
+@keyframes spin-disc{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+
+/* ── BOTTOM ACTIONS ── */
+.story-actions{
+  position:absolute;bottom:0;left:0;right:0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 12px 14px;z-index:30;
+  background:linear-gradient(to top,rgba(0,0,0,.5),transparent);
+}
+.reply-input-row{
+  display:flex;align-items:center;flex:1;
+  border:1.5px solid rgba(255,255,255,.4);
+  border-radius:22px;padding:6px 14px;margin-right:10px;
+  background:transparent;cursor:text;
+}
+.reply-placeholder{font-size:13px;color:rgba(255,255,255,.55)}
+.action-icons{display:flex;gap:14px;align-items:center}
+.icon-btn{
+  background:none;border:none;color:#fff;
+  cursor:pointer;font-size:26px;padding:2px;
+  transition:transform .15s,color .15s;line-height:1;
+  display:flex;align-items:center;justify-content:center;
+}
+.icon-btn:hover{transform:scale(1.15)}
+.icon-btn.liked{color:#ff4d6d;animation:heart-pop .3s cubic-bezier(.34,1.56,.64,1)}
+@keyframes heart-pop{0%{transform:scale(1)}40%{transform:scale(1.4)}100%{transform:scale(1)}}
+.heart-count{font-size:11px;color:rgba(255,255,255,.7);margin-left:-8px;min-width:16px}
+
+/* ── TAP ZONES ── */
+.tap-left,.tap-right{
+  position:absolute;top:55px;bottom:80px;width:40%;
+  z-index:25;cursor:pointer;
+}
+.tap-left{left:0}
+.tap-right{right:0}
+
+/* ── BOTTOM CONTROLS ── */
+.bottom-controls{width:100%;display:flex;flex-direction:column;gap:8px;}
+.ctrl-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
+.ctrl-btn{
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
+  border-radius:var(--r-sm);color:rgba(255,255,255,.85);
+  font-size:12px;padding:7px 14px;cursor:pointer;
+  display:flex;align-items:center;gap:5px;font-family:inherit;
+  transition:all .2s;
+}
+.ctrl-btn:hover{background:rgba(168,85,247,.3);border-color:rgba(168,85,247,.6)}
+
+/* ── OVERLAY PANEL ── */
+.overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.7);
+  z-index:200;display:none;align-items:flex-end;justify-content:center;
+}
+.overlay.open{display:flex}
+.panel{
+  background:#1a1a2a;border-radius:20px 20px 0 0;
+  padding:1.4rem;width:100%;max-width:440px;
+  max-height:80vh;overflow-y:auto;
+  border:0.5px solid rgba(255,255,255,.1);
+}
+.panel-title{font-size:15px;font-weight:600;color:#fff;margin-bottom:1rem}
+.field-label{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.field-input,.field-textarea{
+  width:100%;border:0.5px solid rgba(255,255,255,.15);border-radius:var(--r-sm);
+  background:rgba(255,255,255,.06);color:#fff;font-size:13px;
+  padding:7px 10px;margin-bottom:10px;font-family:inherit;
+}
+.field-textarea{resize:vertical}
+.field-input:focus,.field-textarea:focus{outline:none;border-color:var(--accent)}
+.panel-btn-row{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}
+.btn-save{background:var(--accent);color:#fff;border:none;border-radius:var(--r-sm);padding:7px 16px;font-size:13px;cursor:pointer;font-family:inherit;font-weight:500}
+.btn-cancel{background:rgba(255,255,255,.07);color:rgba(255,255,255,.7);border:0.5px solid rgba(255,255,255,.12);border-radius:var(--r-sm);padding:7px 16px;font-size:13px;cursor:pointer;font-family:inherit}
+.song-edit-row{display:flex;gap:6px;align-items:center;margin-bottom:8px}
+.song-edit-row .field-input{flex:1;margin-bottom:0}
+.btn-del{background:none;border:none;color:#f87171;cursor:pointer;font-size:15px;padding:3px}
+.btn-add-song{width:100%;padding:7px;background:rgba(255,255,255,.04);border:0.5px dashed rgba(255,255,255,.2);border-radius:var(--r-sm);color:rgba(255,255,255,.5);font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;margin-top:4px;font-family:inherit}
+.btn-add-song:hover{border-color:var(--accent);color:var(--accent)}
+.btn-remove-slide{width:100%;padding:7px;background:rgba(239,68,68,.08);border:0.5px solid rgba(239,68,68,.3);border-radius:var(--r-sm);color:#f87171;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;margin-top:8px;font-family:inherit}
+.divider{border:none;border-top:0.5px solid rgba(255,255,255,.1);margin:10px 0}
+.upload-area{width:100%;padding:.75rem;border:0.5px dashed rgba(255,255,255,.2);border-radius:var(--r-sm);text-align:center;color:rgba(255,255,255,.45);font-size:12px;cursor:pointer;margin-bottom:10px}
+.upload-area:hover{border-color:var(--accent);color:var(--accent)}
+#file-input{display:none}
+</style>
+</head>
+<body>
+
+<div class="story-wrapper">
+  <!-- TELÉFONO / HISTORIA -->
+  <div class="story-phone" id="story-phone">
+
+    <!-- Barra de progreso estilo Instagram -->
+    <div class="progress-bars" id="progress-bars"></div>
+
+    <!-- Header -->
+    <div class="story-header" id="story-header">
+      <div class="avatar-ring"><div class="avatar-inner">K</div></div>
+      <div class="story-meta">
+        <div class="story-username" id="hdr-username">Katherine</div>
+        <div class="story-time">Hace 1 minuto</div>
+      </div>
+      <button class="story-close" onclick="openSlideEdit(state.current)">
+        <i class="ti ti-pencil"></i>
+      </button>
+    </div>
+
+    <!-- Slides -->
+    <div id="slides-container"></div>
+
+    <!-- Zonas de toque izquierda / derecha -->
+    <div class="tap-left"  onclick="navigate(-1)"></div>
+    <div class="tap-right" onclick="navigate(1)"></div>
+
+    <!-- Widget de música -->
+    <div class="music-widget hidden" id="music-widget">
+      <div class="music-album" id="music-album"><i class="ti ti-music"></i></div>
+      <div class="music-info">
+        <div class="music-name"   id="music-name">Canción</div>
+        <div class="music-artist" id="music-artist">Artista</div>
+      </div>
+      <div class="music-icon" id="music-icon"><i class="ti ti-music"></i></div>
+    </div>
+
+    <!-- Barra inferior estilo Instagram -->
+    <div class="story-actions">
+      <div class="reply-input-row">
+        <span class="reply-placeholder">Enviar mensaje...</span>
+      </div>
+      <div class="action-icons">
+        <button class="icon-btn" id="like-btn" onclick="toggleLike()" aria-label="Me gusta">
+          <i class="ti ti-heart"></i>
+        </button>
+        <span class="heart-count" id="heart-count"></span>
+        <button class="icon-btn" onclick="openSlideEdit(state.current)" aria-label="Editar" style="font-size:22px">
+          <i class="ti ti-send"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Controles debajo del teléfono -->
+  <div class="bottom-controls">
+    <div class="ctrl-row">
+      <button class="ctrl-btn" onclick="openSlideEdit(state.current)">
+        <i class="ti ti-edit"></i> Editar tarjeta
+      </button>
+      <button class="ctrl-btn" onclick="addPhotoSlide()">
+        <i class="ti ti-photo-plus"></i> + Foto
+      </button>
+      <button class="ctrl-btn" onclick="addMessageSlide()">
+        <i class="ti ti-message-heart"></i> + Mensaje
+      </button>
+      <button class="ctrl-btn" onclick="addSongsSlide()">
+        <i class="ti ti-music"></i> + Canciones
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Panel de edición -->
+<div class="overlay" id="overlay" onclick="handleOverlayClick(event)">
+  <div class="panel">
+    <p class="panel-title" id="panel-title">Editar</p>
+    <div id="panel-body"></div>
+    <div class="panel-btn-row">
+      <button class="btn-cancel" onclick="closeEdit()">Cancelar</button>
+      <button class="btn-save"   onclick="saveEdit()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<input type="file" id="file-input" accept="image/*" onchange="handleFile(event)"/>
+
+<script>
+/* ============================================================
+    ✏️  EDITA AQUÍ TUS DATOS
+    Cada objeto en state.slides es una tarjeta / historia.
+    Tipos disponibles: 'cover', 'photo', 'songs', 'message'
+    El campo music: { name, artist, emoji } controla la
+    canción que aparece en cada tarjeta.
+   ============================================================ */
+const state = {
+  current: 0,
+  editingSlide: null,
+  pendingFile: null,
+  likes: {},
+  slides: [
+    /* ── PORTADA ── */
+    {
+      type: 'cover',
+      name: 'Katherine Elizabeth',       // 👈 Nombre
+      sub:  'Un día muy especial ✨',     // 👈 Subtítulo
+      year: '2025',
+      music: { name: 'Happy Birthday', artist: 'Stevie Wonder', emoji: '🎂' }
+    },
+    /* ── FOTO 1 ──
+      imgSrc: null  → muestra botón para subir imagen
+      imgSrc: 'img/foto.jpg'  → carga tu imagen
+    */
+    {
+      type: 'photo',
+      imgSrc: 'img/imagen1.png',
+      caption: 'Escribe aquí el texto de esta foto especial.',
+      label: 'Un momento',
+      year: '2022',
+      music: { name: 'Golden Hour', artist: 'JVKE', emoji: '🌅' }
+    },
+    /* ── FOTO 2 ── */
+    {
+      type: 'photo',
+      imgSrc: 'img/imagen2.png',
+      caption: 'Otro recuerdo increíble que siempre recordaremos juntos.',
+      label: 'Recuerdo favorito',
+      year: '2023',
+      music: { name: 'Flowers', artist: 'Miley Cyrus', emoji: '🌸' }
+    },
+    /* ── CANCIONES ── */
+    {
+      type: 'songs',
+      heading: 'Las canciones de tu año',
+      music: { name: 'As It Was', artist: 'Harry Styles', emoji: '🎵' },
+      songs: [
+        { name: 'Tu canción favorita',      artist: 'Artista', emoji: '🎵' },
+        { name: 'La que siempre suena',     artist: 'Artista', emoji: '🎶' },
+        { name: 'La del momento especial',  artist: 'Artista', emoji: '🎸' },
+      ]
+    },
+    /* ── MENSAJE FINAL ── */
+    {
+      type: 'message',
+      label: 'Para ti',
+      text: 'Que este día esté lleno de alegría, risas y todo lo que te hace feliz. Eres increíble y mereces lo mejor.',
+      signature: '— Con todo el cariño ❤️',
+      music: { name: 'A Thousand Years', artist: 'Christina Perri', emoji: '💕' }
+    },
+  ]
+};
+/* ============================================================ */
+
+function esc(s) {
+  if (!s) return '';
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ── RENDER ── */
+function renderAll() {
+  const c = document.getElementById('slides-container');
+  c.innerHTML = '';
+  state.slides.forEach((s, i) => c.appendChild(buildSlide(s, i)));
+  renderProgressBars();
+  showSlide(state.current);
+  updateMusicWidget();
+}
+
+function buildSlide(s, i) {
+  const w = document.createElement('div');
+  w.className = 'slide';
+  w.id = 'slide-' + i;
+
+  if (s.type === 'cover') {
+    w.innerHTML = `
+      <div class="slide-bg cover-bg"></div>
+      <div class="slide-content" style="justify-content:center;text-align:center;padding-top:80px">
+        <div class="cover-stars">✦ ✦ ✦</div>
+        <p class="cover-eyebrow">Feliz cumpleaños</p>
+        <h1 class="cover-name">${esc(s.name)}</h1>
+        <p class="cover-sub">${esc(s.sub)}</p>
+        <p style="font-size:11px;color:var(--hint)">${esc(s.year)}</p>
+      </div>`;
+
+  } else if (s.type === 'photo') {
+    const imgPart = s.imgSrc
+      ? `<img src="${s.imgSrc}" class="photo-img" alt="foto"/>`
+      : `<div class="upload-placeholder" onclick="triggerFile(${i})">
+           <i class="ti ti-camera"></i>
+           <span>Toca para subir foto</span>
+         </div>`;
+    w.innerHTML = `
+      <div class="slide-bg" style="background:#111">${imgPart}</div>
+      <div class="photo-gradient"></div>
+      <div class="slide-content" style="justify-content:flex-end">
+        <p class="photo-label">${esc(s.label || '')}</p>
+        <p class="photo-caption">${esc(s.caption || '')}</p>
+      </div>`;
+
+  } else if (s.type === 'songs') {
+    const items = s.songs.map((sg, si) => `
+      <div class="song-item">
+        <span class="song-num">${si + 1}</span>
+        <div class="song-art">
+          ${sg.imgSrc ? `<img src="${sg.imgSrc}">` : (sg.emoji || '🎵')}
+        </div>
+        <div class="song-info">
+          <p class="song-name">${esc(sg.name)}</p>
+          <p class="song-artist">${esc(sg.artist)}</p>
+        </div>
+      </div>`).join('');
+    w.innerHTML = `
+      <div class="slide-bg songs-bg"></div>
+      <div class="slide-content" style="justify-content:flex-start;padding-top:80px">
+        <p style="font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:1rem">
+          ${esc(s.heading || 'Mis canciones')}
+        </p>
+        <div class="song-list">${items}</div>
+      </div>`;
+
+  } else if (s.type === 'message') {
+    w.innerHTML = `
+      <div class="slide-bg msg-bg"></div>
+      <div class="slide-content" style="justify-content:center;text-align:center;padding:80px 1.5rem 5.5rem">
+        <div class="msg-hearts">♡ ♡ ♡</div>
+        <p class="msg-label">${esc(s.label || 'Para ti')}</p>
+        <p class="msg-text">"${esc(s.text)}"</p>
+        <p class="msg-signature">${esc(s.signature || '')}</p>
+      </div>`;
+  }
+  return w;
+}
+
+/* ── PROGRESS BARS ── */
+function renderProgressBars() {
+  const c = document.getElementById('progress-bars');
+  c.innerHTML = state.slides.map((_, i) => `
+    <div class="prog-seg${i < state.current ? ' done' : ''}" id="prog-${i}" onclick="goTo(${i})">
+      <div class="prog-fill" id="prog-fill-${i}"
+           style="width:${i < state.current ? '100%' : '0%'}"></div>
+    </div>`).join('');
+}
+
+/* ── NAVIGATION ── */
+function showSlide(idx) {
+  document.querySelectorAll('.slide').forEach((el, i) =>
+    el.classList.toggle('active', i === idx));
+  renderProgressBars();
+  updateMusicWidget();
+  updateLikeBtn();
+}
+
+function navigate(dir) {
+  const next = Math.max(0, Math.min(state.slides.length - 1, state.current + dir));
+  goTo(next);
+}
+
+function goTo(i) {
+  state.current = i;
+  showSlide(i);
+}
+
+/* ── MUSIC WIDGET ── */
+function updateMusicWidget() {
+  const s = state.slides[state.current];
+  const w = document.getElementById('music-widget');
+  if (s.music && s.music.name) {
+    w.classList.remove('hidden');
+    document.getElementById('music-name').textContent   = s.music.name;
+    document.getElementById('music-artist').textContent = s.music.artist || '';
+    const alb = document.getElementById('music-album');
+    alb.innerHTML = s.music.imgSrc
+      ? `<img src="${s.music.imgSrc}" alt="">`
+      : (s.music.emoji || '🎵');
+  } else {
+    w.classList.add('hidden');
+  }
+}
+
+/* ── LIKES ── */
+function toggleLike() {
+  const i = state.current;
+  state.likes[i] = (state.likes[i] || 0) === 0 ? 1 : 0;
+  updateLikeBtn();
+}
+function updateLikeBtn() {
+  const i    = state.current;
+  const btn  = document.getElementById('like-btn');
+  const cnt  = document.getElementById('heart-count');
+  const liked = state.likes[i] > 0;
+  if (liked) { btn.classList.add('liked'); }
+  else       { btn.classList.remove('liked'); }
+  btn.innerHTML = liked
+    ? '<i class="ti ti-heart" style="color:#ff4d6d"></i>'
+    : '<i class="ti ti-heart"></i>';
+  cnt.textContent = liked ? '1' : '';
+}
+
+/* ── AGREGAR TARJETAS ── */
+function addPhotoSlide() {
+  state.slides.splice(state.slides.length - 1, 0, {
+    type: 'photo', imgSrc: null,
+    caption: 'Nuevo recuerdo especial ✨',
+    label: 'Momento', year: '',
+    music: { name: '', artist: '', emoji: '🎵' }
+  });
+  state.current = state.slides.length - 2;
+  renderAll();
+}
+function addMessageSlide() {
+  state.slides.splice(state.slides.length - 1, 0, {
+    type: 'message', label: 'Para ti',
+    text: 'Escribe tu mensaje especial aquí...',
+    signature: '— Con cariño',
+    music: { name: '', artist: '', emoji: '💕' }
+  });
+  state.current = state.slides.length - 2;
+  renderAll();
+}
+function addSongsSlide() {
+  state.slides.splice(state.slides.length - 1, 0, {
+    type: 'songs', heading: 'Mis canciones favoritas',
+    music: { name: '', artist: '', emoji: '🎵' },
+    songs: [
+      { name: 'Canción 1', artist: 'Artista', emoji: '🎵' },
+      { name: 'Canción 2', artist: 'Artista', emoji: '🎶' }
+    ]
+  });
+  state.current = state.slides.length - 2;
+  renderAll();
+}
+
+/* ── EDIT PANEL ── */
+function openSlideEdit(i) {
+  state.editingSlide = i;
+  const s = state.slides[i];
+  const title = document.getElementById('panel-title');
+  const body  = document.getElementById('panel-body');
+
+  const musicFields = `
+    <hr class="divider"/>
+    <p class="field-label">🎵 Música de esta tarjeta</p>
+    <input class="field-input" id="m-name"   value="${esc(s.music?.name   || '')}" placeholder="Nombre de la canción"/>
+    <input class="field-input" id="m-artist" value="${esc(s.music?.artist || '')}" placeholder="Artista"/>
+    <input class="field-input" id="m-emoji"  value="${esc(s.music?.emoji  || '🎵')}" placeholder="Emoji" style="max-width:60px"/>`;
+
+  if (s.type === 'cover') {
+    title.textContent = 'Editar portada';
+    body.innerHTML = `
+      <p class="field-label">Nombre</p>
+      <input class="field-input" id="e-name" value="${esc(s.name)}"/>
+      <p class="field-label">Subtítulo</p>
+      <input class="field-input" id="e-sub"  value="${esc(s.sub)}"/>
+      <p class="field-label">Año</p>
+      <input class="field-input" id="e-year" value="${esc(s.year)}"/>
+      ${musicFields}`;
+
+  } else if (s.type === 'photo') {
+    title.textContent = 'Editar foto';
+    body.innerHTML = `
+      <p class="field-label">Texto</p>
+      <textarea class="field-input field-textarea" id="e-caption" rows="3">${esc(s.caption)}</textarea>
+      <p class="field-label">Etiqueta</p>
+      <input class="field-input" id="e-label" value="${esc(s.label || '')}"/>
+      <p class="field-label">Año</p>
+      <input class="field-input" id="e-year" value="${esc(s.year || '')}"/>
+      <p class="field-label">Foto</p>
+      <div class="upload-area" onclick="triggerFile(${i})">
+        ${s.imgSrc ? '📷 Cambiar foto' : '📷 Subir foto'}
+      </div>
+      ${musicFields}
+      ${i > 0
+        ? `<button class="btn-remove-slide" onclick="removeSlide(${i})">
+             <i class="ti ti-trash"></i> Eliminar tarjeta
+           </button>`
+        : ''}`;
+
+  } else if (s.type === 'songs') {
+    title.textContent = 'Editar canciones';
+    const inputs = s.songs.map((sg, si) => `
+      <div class="song-edit-row">
+        <input class="field-input" id="sn-${si}" value="${esc(sg.name)}"   placeholder="Canción"/>
+        <input class="field-input" id="sa-${si}" value="${esc(sg.artist)}" placeholder="Artista"/>
+        <input class="field-input" id="se-${si}" value="${esc(sg.emoji || '🎵')}" placeholder="🎵" style="max-width:48px"/>
+        <button class="btn-del" onclick="removeSong(${si})"><i class="ti ti-x"></i></button>
+      </div>`).join('');
+    body.innerHTML = `
+      <p class="field-label">Título</p>
+      <input class="field-input" id="e-heading" value="${esc(s.heading || '')}"/>
+      <hr class="divider"/>
+      <p class="field-label">Canciones</p>
+      <div id="song-inputs">${inputs}</div>
+      ${s.songs.length < 6
+        ? `<button class="btn-add-song" onclick="addSongField()">
+             <i class="ti ti-plus"></i> Agregar canción
+           </button>`
+        : ''}
+      ${musicFields}
+      <button class="btn-remove-slide" onclick="removeSlide(${i})">
+        <i class="ti ti-trash"></i> Eliminar tarjeta
+      </button>`;
+
+  } else if (s.type === 'message') {
+    title.textContent = 'Editar mensaje';
+    body.innerHTML = `
+      <p class="field-label">Etiqueta</p>
+      <input class="field-input" id="e-label" value="${esc(s.label || 'Para ti')}"/>
+      <p class="field-label">Mensaje</p>
+      <textarea class="field-input field-textarea" id="e-text" rows="6">${esc(s.text)}</textarea>
+      <p class="field-label">Firma</p>
+      <input class="field-input" id="e-sig" value="${esc(s.signature || '')}"/>
+      ${musicFields}
+      <button class="btn-remove-slide" onclick="removeSlide(${i})">
+        <i class="ti ti-trash"></i> Eliminar tarjeta
+      </button>`;
+  }
+  document.getElementById('overlay').classList.add('open');
+}
+
+function saveMusicFromPanel(s) {
+  const mn = document.getElementById('m-name');
+  const ma = document.getElementById('m-artist');
+  const me = document.getElementById('m-emoji');
+  if (mn) s.music = { name: mn.value, artist: ma?.value || '', emoji: me?.value || '🎵' };
+}
+
+function saveEdit() {
+  const i = state.editingSlide;
+  const s = state.slides[i];
+  if (s.type === 'cover') {
+    s.name = document.getElementById('e-name').value;
+    s.sub  = document.getElementById('e-sub').value;
+    s.year = document.getElementById('e-year').value;
+    document.getElementById('hdr-username').textContent = s.name.split(' ')[0];
+  } else if (s.type === 'photo') {
+    s.caption = document.getElementById('e-caption').value;
+    s.label   = document.getElementById('e-label').value;
+    s.year    = document.getElementById('e-year').value;
+  } else if (s.type === 'songs') {
+    s.heading = document.getElementById('e-heading').value;
+    s.songs   = s.songs.map((sg, si) => ({
+      ...sg,
+      name:   document.getElementById(`sn-${si}`)?.value || sg.name,
+      artist: document.getElementById(`sa-${si}`)?.value || sg.artist,
+      emoji:  document.getElementById(`se-${si}`)?.value || sg.emoji,
+    }));
+  } else if (s.type === 'message') {
+    s.label     = document.getElementById('e-label').value;
+    s.text      = document.getElementById('e-text').value;
+    s.signature = document.getElementById('e-sig').value;
+  }
+  saveMusicFromPanel(s);
+  closeEdit();
+  renderAll();
+  goTo(i);
+}
+
+function closeEdit() {
+  document.getElementById('overlay').classList.remove('open');
+  state.editingSlide = null;
+}
+function handleOverlayClick(e) {
+  if (e.target === document.getElementById('overlay')) closeEdit();
+}
+
+function addSongField() {
+  const s = state.slides[state.editingSlide];
+  if (s.songs.length >= 6) return;
+  s.songs.push({ name: '', artist: '', emoji: '🎵' });
+  openSlideEdit(state.editingSlide);
+}
+function removeSong(si) {
+  const s = state.slides[state.editingSlide];
+  s.songs.splice(si, 1);
+  openSlideEdit(state.editingSlide);
+}
+function removeSlide(i) {
+  if (state.slides.length <= 2) return;
+  state.slides.splice(i, 1);
+  state.current = Math.max(0, i - 1);
+  closeEdit();
+  renderAll();
+}
+
+/* ── FILE UPLOAD ── */
+function triggerFile(i, pi) {
+  state.pendingFile = { slideIndex: i, photoIndex: pi };
+  document.getElementById('file-input').click();
+}
+function handleFile(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const p = state.pendingFile;
+    if (p != null) {
+      state.slides[p.slideIndex].imgSrc = ev.target.result;
+      renderAll();
+      goTo(p.slideIndex);
+    }
+    e.target.value = '';
+    state.pendingFile = null;
+  };
+  reader.readAsDataURL(file);
+}
+
+/* ── INIT ── */
+renderAll();
+</script>
+</body>
+</html>
