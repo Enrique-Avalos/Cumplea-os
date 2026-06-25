@@ -11,7 +11,7 @@
 :root{
   --bg:#0f0f1f;--surface:#1a1a2e;--border:rgba(255,255,255,0.1);
   --text:#fff;--muted:rgba(255,255,255,0.6);--hint:rgba(255,255,255,0.3);
-  --accent:#a855f7;--accent2:#ec4899;--accent3:#06b6d4;--accent4:#f97316;
+  --accent:#a855f7;--accent2:#9e2863;--accent3:#06b6d4;--accent4:#92153f;
   --r-lg:24px;--r-md:14px;--r-sm:8px;
 }
 body{
@@ -100,7 +100,7 @@ body{
 }
 
 /* cover */
-.cover-bg{background:linear-gradient(135deg,#6d28d9,#ec4899,#f97316,#06b6d4)}
+.cover-bg{background:linear-gradient(135deg,#8b1d99,#ec4899,#a51055,#06b6d4)}
 .cover-stars{font-size:22px;letter-spacing:4px;opacity:.8;margin-bottom:1rem}
 .cover-eyebrow{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:.4rem}
 .cover-name{font-size:34px;font-weight:700;line-height:1.1;margin-bottom:.5rem;text-align:center}
@@ -263,9 +263,9 @@ body{
 
     <!-- Header -->
     <div class="story-header" id="story-header">
-      <div class="avatar-ring"><div class="avatar-inner">K</div></div>
+      <div class="avatar-ring"><div class="avatar-inner">❤</div></div>
       <div class="story-meta">
-        <div class="story-username" id="hdr-username">Katherine</div>
+        <div class="story-username" id="hdr-username">Enriquee_.0</div>
         <div class="story-time">Hace 1 minuto</div>
       </div>
       <button class="story-close" onclick="openSlideEdit(state.current)">
@@ -361,7 +361,7 @@ const state = {
       sub:  'Es un día muy especial ✨',     // 👈 Subtítulo
       year: '2026',
       music: { name: 'Perfumito Nuevo', artist: 'Baby tu eres una estrella⭐', emoji: '❤' },
-      text: 'Que este día esté lleno de alegría, risas y todo lo que te hace feliz. Eres increíble y mereces lo mejor.',
+      text: 'Eres de esas personas que hacen más bonito el camino. Feliz Cumpleaños y gracias por todo.',
     },
     /* ── FOTO 1 ──
       imgSrc: null  → muestra botón para subir imagen
@@ -370,7 +370,7 @@ const state = {
     {
       type: 'photo',
       imgSrc: 'img/fotos1/imagen1.jpeg',
-      caption: 'No queria dejar pasar este día sin agradecerte por todo lo que has sido para mi',
+      caption: 'Te quiero.',
       label: 'Un momento',
       year: '2022',
       music: { name: 'Tonos de Azul', artist: 'Te Quiero Tantooo!', emoji: '💙' }
@@ -379,7 +379,7 @@ const state = {
     {
       type: 'photo',
       imgSrc: 'img/fotos1/imagen3.jpeg',
-      caption: 'Otro recuerdo increíble que siempre recordaremos juntos.',
+      caption: 'Por más años juntos.',
       label: 'Recuerdo favorito',
       year: '2023',
       music: { name: 'Cienciaficción', artist: 'No soy nada cuando estoy sin ti', emoji: '🧪' }
@@ -390,19 +390,19 @@ const state = {
       heading: 'Te Agradezco por:',
       music: { name: 'TQM', artist: 'Aunque eches primero la leche que el confley', emoji: '🎵' },
       songs: [
-        { name: 'Siempre estar para mi.',      artist: 'Artista', emoji: '💜' },
-        { name: 'Escucharme sin juzgar',     artist: 'Artista', emoji: '✨' },
-        { name: 'Disculparme por las veces que te fallé',  artist: 'Artista', emoji: '💛' },
+        { name: 'Tu amistad',      artist: 'Artista', emoji: '💜' },
+        { name: 'Mejorar mis días',     artist: 'Artista', emoji: '✨' },
+        { name: 'Estar con migo pase lo que pase.',  artist: 'Artista', emoji: '💛' },
         { name: 'Siempre darme tu apoyo',  artist: 'Artista', emoji: '💚' },
         { name: 'Ser mi amiga incondicional',  artist: 'Artista', emoji: '💖' },
+        { name: 'Tu amor',  artist: 'Artista', emoji: '🌻' }
       ]
     },
     /* ── MENSAJE FINAL ── */
     {
       type: 'message',
       label: 'Para ti',
-      imgSrc: 'img/fotos1/imagen4.jpeg',
-      text: 'No Queria dejar pasar este día tan especial para recordarte y agradecerte por todo lo que has sido para mi. Gracias por estar siempre, incluso en esos dias en los que ni yo mismo sé como sentirme. Gracias por tu paciencia y sobre todo, por tu capacidad de perdonarme y entenderme, incluso cuando me he equivocado. Valoro muchísimo que, a pesar de todo, siempre elijas quedarte; eres una parte esencial de mi vida.',
+      text: 'En este día tan especial no queria dejar de recordarte y agradecerte por todo lo que has sido para mi. Gracias por estar siempre, incluso en esos dias en los que ni yo mismo sé como sentirme. Gracias por tu paciencia y sobre todo, por tu capacidad de perdonarme y entenderme, incluso cuando me he equivocado. Valoro muchísimo que, a pesar de todo, siempre elijas quedarte; eres una parte esencial de mi vida.',
       signature: '— Feliz Cumpleaños ❤️',
       music: { name: 'Crayola', artist: 'Tu me pintas la vida, pareces crayola', emoji: '🖍' }
     },
@@ -448,9 +448,9 @@ function buildSlide(s, i) {
     const imgPart = s.imgSrc
       ? `<img src="${s.imgSrc}" class="photo-img" alt="foto"/>`
       : `<div class="upload-placeholder" onclick="triggerFile(${i})">
-           <i class="ti ti-camera"></i>
-           <span>Toca para subir foto</span>
-         </div>`;
+          <i class="ti ti-camera"></i>
+          <span>Toca para subir foto</span>
+        </div>`;
     w.innerHTML = `
       <div class="slide-bg" style="background:#111">${imgPart}</div>
       <div class="photo-gradient"></div>
