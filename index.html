@@ -82,12 +82,13 @@ body{
   font-size:22px;cursor:pointer;padding:4px;line-height:1;
 }
 
-/* ── SLIDES ── */
+/* --------------------------------------------── SLIDES ── */
 .slide{
   position:absolute;inset:0;
   display:none;flex-direction:column;
-  align-items:center;justify-content:flex-end;
+  align-items:center;justify-content:flex-start;
   animation:fadeIn 0.25s ease;
+  
 }
 .slide.active{display:flex}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
@@ -108,7 +109,7 @@ body{
 /* photo */
 .photo-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .photo-gradient{position:absolute;bottom:0;left:0;right:0;height:65%;background:linear-gradient(to top,rgba(0,0,0,.9),transparent);z-index:1}
-.photo-caption{color:#fff;font-size:14px;line-height:1.5;text-align:center;margin-bottom:.5rem}
+.photo-caption{color:#fff;font-size:14px;line-height:1.5;text-align:center; align-items:center; margin-bottom:.5rem}
 .photo-label{color:var(--muted);font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:.4rem}
 .upload-placeholder{
   position:absolute;inset:0;display:flex;flex-direction:column;
@@ -357,9 +358,10 @@ const state = {
     {
       type: 'cover',
       name: 'Katherine Elizabeth',       // 👈 Nombre
-      sub:  'Un día muy especial ✨',     // 👈 Subtítulo
-      year: '2025',
-      music: { name: 'Happy Birthday', artist: 'Stevie Wonder', emoji: '🎂' }
+      sub:  'Es un día muy especial ✨',     // 👈 Subtítulo
+      year: '2026',
+      music: { name: 'Perfumito Nuevo', artist: 'Baby tu eres una estrella⭐', emoji: '❤' },
+      text: 'Que este día esté lleno de alegría, risas y todo lo que te hace feliz. Eres increíble y mereces lo mejor.',
     },
     /* ── FOTO 1 ──
       imgSrc: null  → muestra botón para subir imagen
@@ -367,39 +369,42 @@ const state = {
     */
     {
       type: 'photo',
-      imgSrc: 'img/imagen1.png',
-      caption: 'Escribe aquí el texto de esta foto especial.',
+      imgSrc: 'img/fotos1/imagen1.jpeg',
+      caption: 'No queria dejar pasar este día sin agradecerte por todo lo que has sido para mi',
       label: 'Un momento',
       year: '2022',
-      music: { name: 'Golden Hour', artist: 'JVKE', emoji: '🌅' }
+      music: { name: 'Tonos de Azul', artist: 'Te Quiero Tantooo!', emoji: '💙' }
     },
     /* ── FOTO 2 ── */
     {
       type: 'photo',
-      imgSrc: 'img/imagen2.png',
+      imgSrc: 'img/fotos1/imagen3.jpeg',
       caption: 'Otro recuerdo increíble que siempre recordaremos juntos.',
       label: 'Recuerdo favorito',
       year: '2023',
-      music: { name: 'Flowers', artist: 'Miley Cyrus', emoji: '🌸' }
+      music: { name: 'Cienciaficción', artist: 'No soy nada cuando estoy sin ti', emoji: '🧪' }
     },
     /* ── CANCIONES ── */
     {
       type: 'songs',
-      heading: 'Las canciones de tu año',
-      music: { name: 'As It Was', artist: 'Harry Styles', emoji: '🎵' },
+      heading: 'Te Agradezco por:',
+      music: { name: 'TQM', artist: 'Aunque eches primero la leche que el confley', emoji: '🎵' },
       songs: [
-        { name: 'Tu canción favorita',      artist: 'Artista', emoji: '🎵' },
-        { name: 'La que siempre suena',     artist: 'Artista', emoji: '🎶' },
-        { name: 'La del momento especial',  artist: 'Artista', emoji: '🎸' },
+        { name: 'Siempre estar para mi.',      artist: 'Artista', emoji: '💜' },
+        { name: 'Escucharme sin juzgar',     artist: 'Artista', emoji: '✨' },
+        { name: 'Disculparme por las veces que te fallé',  artist: 'Artista', emoji: '💛' },
+        { name: 'Siempre darme tu apoyo',  artist: 'Artista', emoji: '💚' },
+        { name: 'Ser mi amiga incondicional',  artist: 'Artista', emoji: '💖' },
       ]
     },
     /* ── MENSAJE FINAL ── */
     {
       type: 'message',
       label: 'Para ti',
-      text: 'Que este día esté lleno de alegría, risas y todo lo que te hace feliz. Eres increíble y mereces lo mejor.',
-      signature: '— Con todo el cariño ❤️',
-      music: { name: 'A Thousand Years', artist: 'Christina Perri', emoji: '💕' }
+      imgSrc: 'img/fotos1/imagen4.jpeg',
+      text: 'No Queria dejar pasar este día tan especial para recordarte y agradecerte por todo lo que has sido para mi. Gracias por estar siempre, incluso en esos dias en los que ni yo mismo sé como sentirme. Gracias por tu paciencia y sobre todo, por tu capacidad de perdonarme y entenderme, incluso cuando me he equivocado. Valoro muchísimo que, a pesar de todo, siempre elijas quedarte; eres una parte esencial de mi vida.',
+      signature: '— Feliz Cumpleaños ❤️',
+      music: { name: 'Crayola', artist: 'Tu me pintas la vida, pareces crayola', emoji: '🖍' }
     },
   ]
 };
@@ -431,11 +436,12 @@ function buildSlide(s, i) {
     w.innerHTML = `
       <div class="slide-bg cover-bg"></div>
       <div class="slide-content" style="justify-content:center;text-align:center;padding-top:80px">
-        <div class="cover-stars">✦ ✦ ✦</div>
+        <div class="cover-stars">♡ ♡ ♡</div>
         <p class="cover-eyebrow">Feliz cumpleaños</p>
         <h1 class="cover-name">${esc(s.name)}</h1>
         <p class="cover-sub">${esc(s.sub)}</p>
         <p style="font-size:11px;color:var(--hint)">${esc(s.year)}</p>
+        <p>${esc(s.text || '')}</p>
       </div>`;
 
   } else if (s.type === 'photo') {
