@@ -82,13 +82,12 @@ body{
   font-size:22px;cursor:pointer;padding:4px;line-height:1;
 }
 
-/* --------------------------------------------── SLIDES ── */
+/* ── SLIDES ── */
 .slide{
   position:absolute;inset:0;
   display:none;flex-direction:column;
   align-items:center;justify-content:flex-start;
   animation:fadeIn 0.25s ease;
-  
 }
 .slide.active{display:flex}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
@@ -109,7 +108,7 @@ body{
 /* photo */
 .photo-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .photo-gradient{position:absolute;bottom:0;left:0;right:0;height:65%;background:linear-gradient(to top,rgba(0,0,0,.9),transparent);z-index:1}
-.photo-caption{color:#fff;font-size:14px;line-height:1.5;text-align:center; align-items:center; margin-bottom:.5rem}
+.photo-caption{color:#fff;font-size:14px;line-height:1.5;text-align:center;margin-bottom:.5rem}
 .photo-label{color:var(--muted);font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:.4rem}
 .upload-placeholder{
   position:absolute;inset:0;display:flex;flex-direction:column;
@@ -162,13 +161,37 @@ body{
 .music-info{flex:1;min-width:0}
 .music-name{font-size:12px;font-weight:500;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .music-artist{font-size:10px;color:rgba(255,255,255,.6);margin-top:1px}
-.music-icon{
+
+/* ── MUSIC CONTROLS (new) ── */
+.music-controls{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.music-play-btn{
   width:28px;height:28px;border-radius:50%;
-  background:var(--accent);display:flex;align-items:center;justify-content:center;
-  flex-shrink:0;font-size:13px;color:#fff;
-  animation:spin-disc 4s linear infinite;
+  background:var(--accent);border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;color:#fff;flex-shrink:0;
+  transition:background .2s,transform .1s;
 }
+.music-play-btn:active{transform:scale(.92)}
+.music-play-btn.playing{background:#10b981}
+.disc-icon{
+  width:28px;height:28px;border-radius:50%;
+  background:rgba(255,255,255,.12);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;color:#fff;flex-shrink:0;
+}
+.disc-icon.spinning{animation:spin-disc 4s linear infinite}
 @keyframes spin-disc{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+
+/* upload audio badge */
+.audio-upload-badge{
+  position:absolute;bottom:72px;left:10px;right:10px;
+  display:flex;align-items:center;gap:8px;
+  background:rgba(168,85,247,.25);border:1px dashed rgba(168,85,247,.5);
+  border-radius:12px;padding:8px 12px;z-index:19;cursor:pointer;
+  font-size:12px;color:rgba(255,255,255,.7);
+}
+.audio-upload-badge:hover{background:rgba(168,85,247,.4)}
+.audio-upload-badge i{font-size:18px;color:var(--accent)}
 
 /* ── BOTTOM ACTIONS ── */
 .story-actions{
@@ -249,19 +272,52 @@ body{
 .divider{border:none;border-top:0.5px solid rgba(255,255,255,.1);margin:10px 0}
 .upload-area{width:100%;padding:.75rem;border:0.5px dashed rgba(255,255,255,.2);border-radius:var(--r-sm);text-align:center;color:rgba(255,255,255,.45);font-size:12px;cursor:pointer;margin-bottom:10px}
 .upload-area:hover{border-color:var(--accent);color:var(--accent)}
+
+/* Audio upload row in panel */
+.audio-row{
+  display:flex;align-items:center;gap:8px;
+  background:rgba(168,85,247,.1);border:0.5px solid rgba(168,85,247,.3);
+  border-radius:var(--r-sm);padding:8px 10px;margin-bottom:10px;
+}
+.audio-row-info{flex:1;min-width:0;font-size:12px;color:rgba(255,255,255,.8)}
+.audio-row-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.audio-row-hint{font-size:10px;color:var(--muted);margin-top:2px}
+.btn-audio-upload{
+  background:var(--accent);border:none;border-radius:6px;
+  color:#fff;font-size:11px;padding:5px 10px;cursor:pointer;
+  font-family:inherit;white-space:nowrap;flex-shrink:0;
+}
+.btn-audio-remove{
+  background:rgba(239,68,68,.2);border:0.5px solid rgba(239,68,68,.4);
+  border-radius:6px;color:#f87171;font-size:11px;padding:5px 8px;
+  cursor:pointer;font-family:inherit;flex-shrink:0;
+}
+
 #file-input{display:none}
+#audio-input{display:none}
+
+/* Volume slider */
+.vol-row{
+  display:flex;align-items:center;gap:8px;
+  margin-top:4px;margin-bottom:10px;
+}
+.vol-row i{font-size:16px;color:var(--muted)}
+.vol-slider{
+  flex:1;-webkit-appearance:none;appearance:none;
+  height:3px;border-radius:2px;background:rgba(255,255,255,.2);outline:none;cursor:pointer;
+}
+.vol-slider::-webkit-slider-thumb{
+  -webkit-appearance:none;width:14px;height:14px;
+  border-radius:50%;background:var(--accent);cursor:pointer;
+}
 </style>
 </head>
 <body>
 
 <div class="story-wrapper">
-  <!-- TELÉFONO / HISTORIA -->
   <div class="story-phone" id="story-phone">
-
-    <!-- Barra de progreso estilo Instagram -->
     <div class="progress-bars" id="progress-bars"></div>
 
-    <!-- Header -->
     <div class="story-header" id="story-header">
       <div class="avatar-ring"><div class="avatar-inner">❤</div></div>
       <div class="story-meta">
@@ -273,24 +329,32 @@ body{
       </button>
     </div>
 
-    <!-- Slides -->
     <div id="slides-container"></div>
 
-    <!-- Zonas de toque izquierda / derecha -->
     <div class="tap-left"  onclick="navigate(-1)"></div>
     <div class="tap-right" onclick="navigate(1)"></div>
 
-    <!-- Widget de música -->
+    <!-- Music widget with play/pause -->
     <div class="music-widget hidden" id="music-widget">
       <div class="music-album" id="music-album"><i class="ti ti-music"></i></div>
       <div class="music-info">
         <div class="music-name"   id="music-name">Canción</div>
         <div class="music-artist" id="music-artist">Artista</div>
       </div>
-      <div class="music-icon" id="music-icon"><i class="ti ti-music"></i></div>
+      <div class="music-controls">
+        <button class="music-play-btn" id="music-play-btn" onclick="togglePlay()" title="Reproducir / Pausar">
+          <i class="ti ti-player-play" id="play-icon"></i>
+        </button>
+        <div class="disc-icon" id="disc-icon"><i class="ti ti-music"></i></div>
+      </div>
     </div>
 
-    <!-- Barra inferior estilo Instagram -->
+    <!-- Audio upload hint when no audio loaded -->
+    <div class="audio-upload-badge hidden" id="audio-upload-badge" onclick="openSlideEdit(state.current)">
+      <i class="ti ti-music-plus"></i>
+      <span>Toca "Editar" para subir canción a esta historia</span>
+    </div>
+
     <div class="story-actions">
       <div class="reply-input-row">
         <span class="reply-placeholder">Enviar mensaje...</span>
@@ -307,7 +371,6 @@ body{
     </div>
   </div>
 
-  <!-- Controles debajo del teléfono -->
   <div class="bottom-controls">
     <div class="ctrl-row">
       <button class="ctrl-btn" onclick="openSlideEdit(state.current)">
@@ -338,78 +401,152 @@ body{
   </div>
 </div>
 
-<input type="file" id="file-input" accept="image/*" onchange="handleFile(event)"/>
+<input type="file" id="file-input"  accept="image/*" onchange="handleFile(event)"/>
+<input type="file" id="audio-input" accept="audio/*" onchange="handleAudio(event)"/>
 
 <script>
-/* ============================================================
-    ✏️  EDITA AQUÍ TUS DATOS
-    Cada objeto en state.slides es una tarjeta / historia.
-    Tipos disponibles: 'cover', 'photo', 'songs', 'message'
-    El campo music: { name, artist, emoji } controla la
-    canción que aparece en cada tarjeta.
-   ============================================================ */
+/* ── AUDIO ENGINE ── */
+const audioEngine = {
+  player: new Audio(),
+  currentSlide: -1,
+  volume: 0.8,
+
+  init() {
+    this.player.volume = this.volume;
+    this.player.loop   = true;
+    this.player.addEventListener('play',  () => updatePlayUI(true));
+    this.player.addEventListener('pause', () => updatePlayUI(false));
+    this.player.addEventListener('ended', () => updatePlayUI(false));
+  },
+
+  play(slideIndex) {
+    const s = state.slides[slideIndex];
+    if (!s.audioSrc) { this.stop(); return; }
+
+    if (this.currentSlide === slideIndex && this.player.src &&
+        !this.player.paused) return; // already playing same track
+
+    this.player.pause();
+    if (this.currentSlide !== slideIndex || !this.player.src) {
+      this.player.src = s.audioSrc;
+      this.player.currentTime = 0;
+    }
+    this.currentSlide = slideIndex;
+    const p = this.player.play();
+    if (p) p.catch(() => {}); // autoplay policy: silently fail until user gesture
+  },
+
+  stop() {
+    this.player.pause();
+    this.player.src = '';
+    this.currentSlide = -1;
+  },
+
+  toggle() {
+    if (this.player.paused) {
+      if (!this.player.src) {
+        this.play(state.current);
+      } else {
+        const p = this.player.play();
+        if (p) p.catch(() => {});
+      }
+    } else {
+      this.player.pause();
+    }
+  },
+
+  setVolume(v) {
+    this.volume = v;
+    this.player.volume = v;
+  }
+};
+
+function updatePlayUI(playing) {
+  const btn  = document.getElementById('music-play-btn');
+  const icon = document.getElementById('play-icon');
+  const disc = document.getElementById('disc-icon');
+  if (!btn) return;
+  if (playing) {
+    btn.classList.add('playing');
+    icon.className = 'ti ti-player-pause';
+    disc.classList.add('spinning');
+  } else {
+    btn.classList.remove('playing');
+    icon.className = 'ti ti-player-play';
+    disc.classList.remove('spinning');
+  }
+}
+
+function togglePlay() {
+  const s = state.slides[state.current];
+  if (!s.audioSrc) {
+    openSlideEdit(state.current);
+    return;
+  }
+  audioEngine.toggle();
+}
+
+/* ── STATE ── */
 const state = {
   current: 0,
   editingSlide: null,
   pendingFile: null,
+  pendingAudio: null,
   likes: {},
   slides: [
-    /* ── PORTADA ── */
     {
       type: 'cover',
-      name: 'Katherine Elizabeth',       // 👈 Nombre
-      sub:  'Es un día muy especial ✨',     // 👈 Subtítulo
+      name: 'Katherine Elizabeth',
+      sub:  'Es un día muy especial ✨',
       year: '2026',
-      music: { name: 'Perfumito Nuevo', artist: 'Baby tu eres una estrella⭐', emoji: '❤' },
       text: 'Eres de esas personas que hacen más bonito el camino. Feliz Cumpleaños y gracias por todo.',
+      music: { name: 'Perfumito Nuevo', artist: 'Baby tu eres una estrella⭐', emoji: '❤' },
+      audioSrc: 'Audio/Cancion1.mp3'
     },
-    /* ── FOTO 1 ──
-      imgSrc: null  → muestra botón para subir imagen
-      imgSrc: 'img/foto.jpg'  → carga tu imagen
-    */
     {
       type: 'photo',
       imgSrc: 'img/fotos1/imagen1.jpeg',
       caption: 'Te quiero.',
       label: 'Un momento',
       year: '2022',
-      music: { name: 'Tonos de Azul', artist: 'Te Quiero Tantooo!', emoji: '💙' }
+      music: { name: 'Tonos de Azul', artist: 'Te Quiero Tantooo!', emoji: '💙' },
+      audioSrc: 'Audio/Cancion2.mp3'
     },
-    /* ── FOTO 2 ── */
     {
       type: 'photo',
       imgSrc: 'img/fotos1/imagen3.jpeg',
       caption: 'Por más años juntos.',
       label: 'Recuerdo favorito',
       year: '2023',
-      music: { name: 'Cienciaficción', artist: 'No soy nada cuando estoy sin ti', emoji: '🧪' }
+      music: { name: 'Cienciaficción', artist: 'No soy nada cuando estoy sin ti', emoji: '🧪' },
+      audioSrc: 'Audio/Cancion3.mp3'
     },
-    /* ── CANCIONES ── */
     {
       type: 'songs',
       heading: 'Te Agradezco por:',
       music: { name: 'TQM', artist: 'Aunque eches primero la leche que el confley', emoji: '🎵' },
+      audioSrc: 'Audio/Cancion4.mp3',
       songs: [
-        { name: 'Tu amistad',      artist: 'Artista', emoji: '💜' },
-        { name: 'Mejorar mis días',     artist: 'Artista', emoji: '✨' },
-        { name: 'Estar con migo pase lo que pase.',  artist: 'Artista', emoji: '💛' },
-        { name: 'Siempre darme tu apoyo',  artist: 'Artista', emoji: '💚' },
-        { name: 'Ser mi amiga incondicional',  artist: 'Artista', emoji: '💖' },
-        { name: 'Tu amor',  artist: 'Artista', emoji: '🌻' }
+        { name: 'Tu amistad',                          artist: 'Artista', emoji: '💜' },
+        { name: 'Mejorar mis días',                    artist: 'Artista', emoji: '✨' },
+        { name: 'Estar conmigo pase lo que pase.',     artist: 'Artista', emoji: '💛' },
+        { name: 'Siempre darme tu apoyo',              artist: 'Artista', emoji: '💚' },
+        { name: 'Ser mi amiga incondicional',          artist: 'Artista', emoji: '💖' },
+        { name: 'Tu amor',                             artist: 'Artista', emoji: '🌻' }
       ]
     },
-    /* ── MENSAJE FINAL ── */
     {
       type: 'message',
       label: 'Para ti',
-      text: 'En este día tan especial no queria dejar de recordarte y agradecerte por todo lo que has sido para mi. Gracias por estar siempre, incluso en esos dias en los que ni yo mismo sé como sentirme. Gracias por tu paciencia y sobre todo, por tu capacidad de perdonarme y entenderme, incluso cuando me he equivocado. Valoro muchísimo que, a pesar de todo, siempre elijas quedarte; eres una parte esencial de mi vida.',
+      text: 'En este día tan especial no quería dejar de recordarte y agradecerte por todo lo que has sido para mi. Gracias por estar siempre, incluso en esos dias en los que ni yo mismo sé como sentirme. Gracias por tu paciencia y sobre todo, por tu capacidad de perdonarme y entenderme, incluso cuando me he equivocado. Valoro muchísimo que, a pesar de todo, siempre elijas quedarte; eres una parte esencial de mi vida.',
       signature: '— Feliz Cumpleaños ❤️',
-      music: { name: 'Crayola', artist: 'Tu me pintas la vida, pareces crayola', emoji: '🖍' }
+      music: { name: 'Crayola', artist: 'Tu me pintas la vida, pareces crayola', emoji: '🖍' },
+      audioSrc: 'music/Audio/Cancion5.mp3'
     },
   ]
 };
-/* ============================================================ */
 
+/* ── HELPERS ── */
 function esc(s) {
   if (!s) return '';
   return String(s)
@@ -441,7 +578,7 @@ function buildSlide(s, i) {
         <h1 class="cover-name">${esc(s.name)}</h1>
         <p class="cover-sub">${esc(s.sub)}</p>
         <p style="font-size:11px;color:var(--hint)">${esc(s.year)}</p>
-        <p>${esc(s.text || '')}</p>
+        <p style="font-size:13px;color:rgba(255,255,255,.75);margin-top:1rem;max-width:260px;text-align:center">${esc(s.text || '')}</p>
       </div>`;
 
   } else if (s.type === 'photo') {
@@ -510,6 +647,15 @@ function showSlide(idx) {
   renderProgressBars();
   updateMusicWidget();
   updateLikeBtn();
+
+  // Switch audio track
+  const s = state.slides[idx];
+  if (s.audioSrc) {
+    audioEngine.play(idx);
+  } else {
+    // Stop previous audio if new slide has none
+    if (audioEngine.currentSlide !== idx) audioEngine.stop();
+  }
 }
 
 function navigate(dir) {
@@ -524,8 +670,10 @@ function goTo(i) {
 
 /* ── MUSIC WIDGET ── */
 function updateMusicWidget() {
-  const s = state.slides[state.current];
-  const w = document.getElementById('music-widget');
+  const s   = state.slides[state.current];
+  const w   = document.getElementById('music-widget');
+  const badge = document.getElementById('audio-upload-badge');
+
   if (s.music && s.music.name) {
     w.classList.remove('hidden');
     document.getElementById('music-name').textContent   = s.music.name;
@@ -534,8 +682,16 @@ function updateMusicWidget() {
     alb.innerHTML = s.music.imgSrc
       ? `<img src="${s.music.imgSrc}" alt="">`
       : (s.music.emoji || '🎵');
+
+    // Update play button state
+    const isPlaying = !audioEngine.player.paused && audioEngine.currentSlide === state.current;
+    updatePlayUI(isPlaying);
+
+    // Show upload badge only when no audio is loaded
+    if (badge) badge.classList.add('hidden');
   } else {
     w.classList.add('hidden');
+    if (badge) badge.classList.remove('hidden');
   }
 }
 
@@ -550,21 +706,22 @@ function updateLikeBtn() {
   const btn  = document.getElementById('like-btn');
   const cnt  = document.getElementById('heart-count');
   const liked = state.likes[i] > 0;
-  if (liked) { btn.classList.add('liked'); }
-  else       { btn.classList.remove('liked'); }
+  if (liked) btn.classList.add('liked');
+  else       btn.classList.remove('liked');
   btn.innerHTML = liked
     ? '<i class="ti ti-heart" style="color:#ff4d6d"></i>'
     : '<i class="ti ti-heart"></i>';
   cnt.textContent = liked ? '1' : '';
 }
 
-/* ── AGREGAR TARJETAS ── */
+/* ── ADD SLIDES ── */
 function addPhotoSlide() {
   state.slides.splice(state.slides.length - 1, 0, {
     type: 'photo', imgSrc: null,
     caption: 'Nuevo recuerdo especial ✨',
     label: 'Momento', year: '',
-    music: { name: '', artist: '', emoji: '🎵' }
+    music: { name: '', artist: '', emoji: '🎵' },
+    audioSrc: null
   });
   state.current = state.slides.length - 2;
   renderAll();
@@ -574,7 +731,8 @@ function addMessageSlide() {
     type: 'message', label: 'Para ti',
     text: 'Escribe tu mensaje especial aquí...',
     signature: '— Con cariño',
-    music: { name: '', artist: '', emoji: '💕' }
+    music: { name: '', artist: '', emoji: '💕' },
+    audioSrc: null
   });
   state.current = state.slides.length - 2;
   renderAll();
@@ -583,6 +741,7 @@ function addSongsSlide() {
   state.slides.splice(state.slides.length - 1, 0, {
     type: 'songs', heading: 'Mis canciones favoritas',
     music: { name: '', artist: '', emoji: '🎵' },
+    audioSrc: null,
     songs: [
       { name: 'Canción 1', artist: 'Artista', emoji: '🎵' },
       { name: 'Canción 2', artist: 'Artista', emoji: '🎶' }
@@ -593,6 +752,35 @@ function addSongsSlide() {
 }
 
 /* ── EDIT PANEL ── */
+function audioUploadUI(s, i) {
+  const hasAudio = !!s.audioSrc;
+  const audioName = s.audioFileName || (hasAudio ? 'Archivo de audio' : '');
+  return `
+    <hr class="divider"/>
+    <p class="field-label">🎵 Canción de esta historia</p>
+    <div class="audio-row">
+      <i class="ti ti-${hasAudio ? 'music' : 'music-off'}" style="font-size:20px;color:${hasAudio ? 'var(--accent)' : 'var(--hint)'}"></i>
+      <div class="audio-row-info">
+        <div class="audio-row-name">${hasAudio ? esc(audioName) : 'Sin canción asignada'}</div>
+        <div class="audio-row-hint">${hasAudio ? 'Se reproducirá automáticamente' : 'Sube un MP3 u otro formato de audio'}</div>
+      </div>
+      ${hasAudio
+        ? `<button class="btn-audio-remove" onclick="removeAudio(${i})">✕</button>`
+        : ''}
+      <button class="btn-audio-upload" onclick="triggerAudio(${i})">
+        ${hasAudio ? 'Cambiar' : 'Subir'}
+      </button>
+    </div>
+    <p class="field-label" style="margin-top:4px">Volumen</p>
+    <div class="vol-row">
+      <i class="ti ti-volume"></i>
+      <input type="range" class="vol-slider" id="vol-slider" min="0" max="1" step="0.05"
+             value="${audioEngine.volume}"
+             oninput="audioEngine.setVolume(parseFloat(this.value))"/>
+      <i class="ti ti-volume-2"></i>
+    </div>`;
+}
+
 function openSlideEdit(i) {
   state.editingSlide = i;
   const s = state.slides[i];
@@ -601,10 +789,12 @@ function openSlideEdit(i) {
 
   const musicFields = `
     <hr class="divider"/>
-    <p class="field-label">🎵 Música de esta tarjeta</p>
+    <p class="field-label">Etiqueta de música (widget)</p>
     <input class="field-input" id="m-name"   value="${esc(s.music?.name   || '')}" placeholder="Nombre de la canción"/>
-    <input class="field-input" id="m-artist" value="${esc(s.music?.artist || '')}" placeholder="Artista"/>
+    <input class="field-input" id="m-artist" value="${esc(s.music?.artist || '')}" placeholder="Artista o frase"/>
     <input class="field-input" id="m-emoji"  value="${esc(s.music?.emoji  || '🎵')}" placeholder="Emoji" style="max-width:60px"/>`;
+
+  const audioUI = audioUploadUI(s, i);
 
   if (s.type === 'cover') {
     title.textContent = 'Editar portada';
@@ -615,7 +805,7 @@ function openSlideEdit(i) {
       <input class="field-input" id="e-sub"  value="${esc(s.sub)}"/>
       <p class="field-label">Año</p>
       <input class="field-input" id="e-year" value="${esc(s.year)}"/>
-      ${musicFields}`;
+      ${musicFields}${audioUI}`;
 
   } else if (s.type === 'photo') {
     title.textContent = 'Editar foto';
@@ -630,7 +820,7 @@ function openSlideEdit(i) {
       <div class="upload-area" onclick="triggerFile(${i})">
         ${s.imgSrc ? '📷 Cambiar foto' : '📷 Subir foto'}
       </div>
-      ${musicFields}
+      ${musicFields}${audioUI}
       ${i > 0
         ? `<button class="btn-remove-slide" onclick="removeSlide(${i})">
              <i class="ti ti-trash"></i> Eliminar tarjeta
@@ -650,14 +840,14 @@ function openSlideEdit(i) {
       <p class="field-label">Título</p>
       <input class="field-input" id="e-heading" value="${esc(s.heading || '')}"/>
       <hr class="divider"/>
-      <p class="field-label">Canciones</p>
+      <p class="field-label">Elementos</p>
       <div id="song-inputs">${inputs}</div>
       ${s.songs.length < 6
         ? `<button class="btn-add-song" onclick="addSongField()">
-             <i class="ti ti-plus"></i> Agregar canción
+             <i class="ti ti-plus"></i> Agregar elemento
            </button>`
         : ''}
-      ${musicFields}
+      ${musicFields}${audioUI}
       <button class="btn-remove-slide" onclick="removeSlide(${i})">
         <i class="ti ti-trash"></i> Eliminar tarjeta
       </button>`;
@@ -671,7 +861,7 @@ function openSlideEdit(i) {
       <textarea class="field-input field-textarea" id="e-text" rows="6">${esc(s.text)}</textarea>
       <p class="field-label">Firma</p>
       <input class="field-input" id="e-sig" value="${esc(s.signature || '')}"/>
-      ${musicFields}
+      ${musicFields}${audioUI}
       <button class="btn-remove-slide" onclick="removeSlide(${i})">
         <i class="ti ti-trash"></i> Eliminar tarjeta
       </button>`;
@@ -744,9 +934,50 @@ function removeSlide(i) {
   renderAll();
 }
 
-/* ── FILE UPLOAD ── */
-function triggerFile(i, pi) {
-  state.pendingFile = { slideIndex: i, photoIndex: pi };
+/* ── AUDIO UPLOAD ── */
+function triggerAudio(i) {
+  state.pendingAudio = i;
+  document.getElementById('audio-input').click();
+}
+
+function handleAudio(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const i = state.pendingAudio;
+    if (i != null) {
+      state.slides[i].audioSrc      = ev.target.result;
+      state.slides[i].audioFileName = file.name;
+
+      // If currently viewing this slide, start playback immediately
+      if (state.current === i) {
+        audioEngine.play(i);
+      }
+
+      // Refresh edit panel to reflect new audio
+      if (state.editingSlide === i) {
+        openSlideEdit(i);
+      }
+      updateMusicWidget();
+    }
+    e.target.value = '';
+    state.pendingAudio = null;
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeAudio(i) {
+  state.slides[i].audioSrc      = null;
+  state.slides[i].audioFileName = null;
+  if (audioEngine.currentSlide === i) audioEngine.stop();
+  if (state.editingSlide === i) openSlideEdit(i);
+  updateMusicWidget();
+}
+
+/* ── IMAGE UPLOAD ── */
+function triggerFile(i) {
+  state.pendingFile = { slideIndex: i };
   document.getElementById('file-input').click();
 }
 function handleFile(e) {
@@ -767,6 +998,7 @@ function handleFile(e) {
 }
 
 /* ── INIT ── */
+audioEngine.init();
 renderAll();
 </script>
 </body>
